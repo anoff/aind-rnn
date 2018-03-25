@@ -13,7 +13,7 @@ def window_transform_series(series, window_size):
     X = []
     y = []
     
-    for i in range(len(series) - window_size - 1):
+    for i in range(len(series) - window_size):
         X.append(series[i:i + window_size])
         y.append(series[i + window_size])
     # reshape each 
@@ -30,7 +30,7 @@ def window_transform_series(series, window_size):
 
 def build_part1_RNN(window_size):
     m = Sequential()
-    m.add(LSTM(units = window_size, input_shape = (window_size,1)))
+    m.add(LSTM(5, input_shape = (window_size,1)))
     m.add(Dense(1))
     
     return m
@@ -43,15 +43,24 @@ def cleaned_text(text):
 
     return "".join(text)
 
-### TODO: fill out the function below that transforms the input text and window-size into a set of input/output pairs for use with our RNN model
+### transform the input text and window-size into a set of input/output pairs for use with our RNN model
 def window_transform_text(text, window_size, step_size):
     # containers for input/output pairs
     inputs = []
     outputs = []
+    for i in range(0, len(text) - window_size, step_size):
+        inputs.append(text[i:i + window_size])
+        outputs.append(text[i + window_size])
 
     return inputs,outputs
 
-# TODO build the required RNN model: 
+# build the required RNN model: 
 # a single LSTM hidden layer with softmax activation, categorical_crossentropy loss 
+#layer 1 should be an LSTM module with 200 hidden units --> note this should have input_shape = (window_size,len(chars)) where len(chars) = number of unique characters in your cleaned text
+#layer 2 should be a linear module, fully connected, with len(chars) hidden units --> where len(chars) = number of unique characters in your cleaned text
+#layer 3 should be a softmax activation ( since we are solving a multiclass classification)
 def build_part2_RNN(window_size, num_chars):
-    pass
+    m = Sequential()
+    m.add(LSTM(200, input_shape=(window_size, num_chars)))
+    m.add(Dense(num_chars, activation='softmax'))
+    return m
